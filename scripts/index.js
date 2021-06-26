@@ -28,6 +28,67 @@ const baseDeDatos = {
   ],
 };
 
+window.onload = () => {
+
+  const form = document.forms.login;
+  const password = form.password;
+  const btnIniciarSesion = form.querySelector("button.login-btn");
+
+  btnIniciarSesion.onclick = event => {
+    event.preventDefault();
+    iniciarSesion(form.email.value, password.value);
+  };
+
+  password.onkeypress = event => {
+    if (event.key === "Enter") {
+      iniciarSesion(form.email.value, password.value);
+    }
+  };
+
+};
+
+function iniciarSesion(email, password) {
+  const errorContainer = document.querySelector("#error-container");
+  errorContainer.classList.add("hidden");
+  document.querySelector("#loader").classList.remove("hidden");
+  setTimeout(() => {
+    document.querySelector("#loader").classList.add("hidden");
+    if (validarDatos(email, password)) {
+      loginExitoso();
+    } else {
+      errorContainer.classList.remove("hidden");
+      errorContainer.innerHTML = "<small>Alguno de los datos ingresados son incorrectos</small>";
+    }
+  }, 3000);
+}
+
+function validarDatos(email, password) {
+  const mailEsValido = validarEmail(email);
+  const passEsValida = validarPassword(password);
+  const existeUsr = existeUsuario(email, password);
+  return mailEsValido && passEsValida && existeUsr;
+}
+
+function validarEmail(email) {
+  const regex = /^[a-zA-Z0-9.!]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}/g;
+  return regex.test(email);
+}
+
+function validarPassword(password) {
+  const regex = /^[a-zA-Z0-9]{5,}/g;
+  return regex.test(password);
+}
+
+function existeUsuario(email, password) {
+  const usuario = baseDeDatos.usuarios.find(usr => usr.email === email && usr.password === password);
+  return usuario !== undefined;
+}
+
+function loginExitoso() {
+  document.forms.login.classList.add("hidden");
+  document.querySelector("h1").innerText = "Bienvenido al sitio 😀";
+}
+
 // ACTIVIDAD
 
 // Paso a paso:
